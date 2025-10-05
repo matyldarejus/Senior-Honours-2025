@@ -51,7 +51,7 @@ def write_line_list(spectrum, spec_file):
         lines.create_dataset("Chisq", data=np.array(spectrum['line_list']['Chisq']))
 
 
-def generate_pygad_spectrum(s, los, line, lambda_rest, gal_vel_pos, periodic_vel, pixel_size, snr, spec_name, LSF=None, fit_contin=False, min_restr_column=5):
+def generate_pygad_spectrum(s, los, line, lambda_rest, gal_vel_pos, periodic_vel, pixel_size, snr, spec_name, LSF, fit_contin=False, min_restr_column=5):
     if os.path.isfile(f'{spec_name}.h5'):
         return
 

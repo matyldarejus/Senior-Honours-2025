@@ -84,7 +84,7 @@ if __name__ == '__main__':
     mass_min = 9.75
     mass_max = 11.5
     sfr_min = -2.8
-    gwslc_data_file = '/home/rad/gizmo-analysis/romeeld/caesar/Observations/GSWLC/GSWLC-X2.dat'
+    gwslc_data_file = '/home/rad/gizmo-analysis/caesar/Observations/GSWLC/GSWLC-X2.dat'
     gwslc_data = {}
     gwslc_data['mass'], gwslc_data['sigma_mass'], gwslc_data['sfr'], gwslc_data['sigma_sfr'], gwslc_data['flag_sed'], gwslc_data['flag_mgs'] = \
             np.loadtxt(gwslc_data_file,usecols=(9,10,11,12,19,23),unpack=True)
@@ -116,8 +116,8 @@ if __name__ == '__main__':
         gal_fgas = np.log10(sf['fgas'][:] + 1e-3)
         gal_Lbaryon = sf['L_baryon'][:]
         #gal_nsats = sf['nsats'][:]
-        gal_Tcgm = sf['Tcgm'][:]
-        gal_fcold = sf['fcold'][:]
+        gal_Tcgm = sf['Tcgm'][:] # Not available if get_galaxy_sample used to generate
+        gal_fcold = sf['fcold'][:] # Not available if get_galaxy_sample used to generate
 
     gal_sm_sfr_file = f'/disk04/mrejus/sh/samples/{model}_{wind}_{snap}_sm_sfr.h5'
     with h5py.File(gal_sm_sfr_file, 'r') as hf:
@@ -155,5 +155,4 @@ if __name__ == '__main__':
     plt.legend(loc=2, fontsize=12)
     plt.tight_layout()
     plt.savefig(f'{sample_dir}{model}_{wind}_{snap}_Tcgm_new.pdf', format='pdf')
-    #plt.savefig(f'{sample_dir}{model}_{wind}_{snap}_Tcgm_new.png', format='png')
     plt.close()

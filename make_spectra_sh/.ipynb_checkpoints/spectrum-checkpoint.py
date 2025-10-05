@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import pygad as pg
 from physics import wave_to_vel, vel_to_wave, tau_to_flux
 from utils import read_h5_into_dict
+import inspect
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif', size=15)
@@ -209,9 +210,9 @@ class Spectrum(object):
 
 
     def plot_fit(self, ax=None, vel_range=600., filename=None):
-
-        # plot the results :)
-
+        """
+        Plot the fitted spectrum and save it to a 'plots' subdirectory in my SH project folder :)
+        """
         if ax is None:
             fig, ax = plt.subplots()
 
@@ -226,82 +227,107 @@ class Spectrum(object):
         ax.plot(self.velocities, self.fluxes_model, label='model', c='tab:pink', ls='-', lw=2)
 
         ax.set_ylim(-0.1, 1.1)
-        ax.set_xlim(self.gal_velocity_pos - vel_range, self.gal_velocity_pos +vel_range)
+        ax.set_xlim(self.gal_velocity_pos - vel_range, self.gal_velocity_pos + vel_range)
         ax.legend()
-        
+
         chisq = np.around(np.unique(self.line_list['Chisq']), 2)
         chisq = [str(i) for i in chisq]
-        plt.title(r'$\chi^2_r = {x}$'.format(x = ', '.join(chisq) ))
-        
-        if filename == None:
-            filename = self.spectrum_file.split('/')[-1].replace('.h5', '.png')
-        plt.savefig(filename)
+        plt.title(r'$\chi^2_r = {x}$'.format(x=', '.join(chisq)))
+
+        plot_dir = os.path.expanduser("~/data/plots")
+        os.makedirs(plot_dir, exist_ok=True)
+
+        if filename is None:
+            base_name = os.path.basename(self.spectrum_file).replace('.h5', '.png')
+            filename = os.path.join(plot_dir, base_name)
+
+        plt.savefig(filename, dpi=150, bbox_inches='tight')
         plt.close()
 
+        print(f" Saved plot to: {filename}")
 
-    def main(self, vel_range, do_continuum_buffer=True, nbuffer=50, 
-             snr_default=30., chisq_unacceptable=25, chisq_asym_thresh=-3., 
-             do_prepare=True, do_regions=False, do_fit=True, write_lines=False, plot_fit=False):
-  
-        # prepare the portion of the spectrum to fit
-        # extract from full spectrum, wrap periodically, buffer with a continuum, set the noise level for fitting
-        if do_prepare:
-            self.prepare_spectrum(vel_range, do_continuum_buffer=True, nbuffer=50, snr_default=30.,)
-
-        # to identify the region boundaries only:
-        if do_regions:
-            if do_prepare is not True:
+    def main(self, vel_range=600., **kwargs):
+        """
+        Runs all the fitting methods defined above
+        Rewritten by Matylda to be more flexible whenever calling in fit_profiles with varied arguments :)
+        """
+        # Default parameters
+        defaults = dict(
+            do_continuum_buffer=True,
+            nbuffer=50,
+            snr_default=30.,
+            chisq_unacceptable=25,
+            chisq_asym_thresh=-3,
+            do_prepare=True,
+            do_regions=False,
+            do_fit=True,
+            write_lines = False,
+            do_plot=False
+        )
+    
+        # Update defaults with user-provided arguments
+        params = {**defaults, **kwargs}
+    
+        # Store as attributes for access elsewhere
+        for k, v in params.items():
+            setattr(self, k, v)
+    
+        if self.do_prepare:
+            self.prepare_spectrum(
+                vel_range,
+                do_continuum_buffer=self.do_continuum_buffer,
+                nbuffer=self.nbuffer,
+                snr_default=self.snr_default,
+            )
+    
+        if self.do_regions:
+            if not self.do_prepare:
                 print('Spectrum not prepared; set do_prepare=True and retry :)')
                 return
             else:
                 self.line_list = {}
-                self.regions_l, self.regions_i = pg.analysis.find_regions(self.waves_fit, self.fluxes_fit, self.noise_fit, min_region_width=2, extend=True)
+                self.regions_l, self.regions_i = pg.analysis.find_regions(
+                    self.waves_fit, self.fluxes_fit, self.noise_fit,
+                    min_region_width=2, extend=True
+                )
                 self.line_list['region'] = np.arange(len(self.regions_l))
-
-        # to perform the voigt fitting:
-        if do_fit:
+    
+        if self.do_fit:
             print('Fitting...')
             if self.ion_name == 'H1215':
                 logN_bounds = [12, 19]
             else:
                 logN_bounds = [11, 17]
-            b_bounds=None
-         
-            self.line_list = pg.analysis.fit_profiles(self.ion_name, self.waves_fit, self.fluxes_fit, self.noise_fit,
-                                                      chisq_lim=2.5, chisq_unacceptable=chisq_unacceptable, 
-                                                      chisq_asym_thresh=chisq_asym_thresh, 
-                                                      max_lines=10, logN_bounds=logN_bounds, 
-                                                      b_bounds=b_bounds, mode='Voigt')
-       
-            # adjust the output lines to cope with wrapping
-            for i in range(len(self.line_list['l'])):
-                if self.line_list['l'][i] > self.wavelengths[-1]:
-                    self.line_list['l'][i]  -= (wave_boxsize + dl)
-                elif self.line_list['l'][i] < self.wavelengths[0]:
-                    self.line_list['l'][i] += (wave_boxsize + dl)
-
-        # keep the fit, save to the original spectrum file
-        print(self.line_list)
-        if write_lines:
+            b_bounds = None
+    
+            fit_func = pg.analysis.fit_profiles
+            valid_keys = inspect.signature(fit_func).parameters.keys()
+    
+            # Build fit_kwargs only for arguments pygad accepts
+            fit_kwargs = {
+                k: v for k, v in dict(
+                    chisq_lim=2.5,
+                    chisq_unacceptable=self.chisq_unacceptable,
+                    chisq_asym_thresh=self.chisq_asym_thresh,
+                    max_lines=10,
+                    logN_bounds=logN_bounds,
+                    b_bounds=b_bounds,
+                    mode='Voigt',
+                ).items() if k in valid_keys and v is not None
+            }
+    
+            # Required positional args (always present)
+            self.line_list = pg.analysis.fit_profiles(
+                self.ion_name,
+                self.waves_fit,
+                self.fluxes_fit,
+                self.noise_fit,
+                **fit_kwargs
+            )
+    
+        if self.write_lines:
             self.write_line_list()
-
-        if plot_fit:
+    
+        if self.do_plot:
             self.plot_fit()
-
-
-if __name__ == '__main__':
-    model = sys.argv[1]
-    wind = sys.argv[2]
-    snap = sys.argv[3]
-    
-    fr200 = 0.25
-    line = 'OVI1031'
-    orient = 0
-    vel_range = 600.
-    chisq_asym_thresh = -3.
-    
-    spectrum_dir = f'/disk04/rad/sim/{model}/{wind}/{snap}/'
-    spectrum_file = f'{spectrum_dir}sample_galaxy_195_{line}_{orient}_deg_{fr200}r200.h5'
-
-    spec = Spectrum(spectrum_file)
-    spec.main(vel_range=vel_range, chisq_asym_thresh=chisq_asym_thresh, plot_fit=True)
+()

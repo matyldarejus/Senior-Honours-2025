@@ -1,8 +1,9 @@
+# Edited by Matylda Rejus for SH 2025
+# Sourced from https://github.com/sarahappleby/cgm/tree/master
+
 # Select 12 Simba galaxies in each of our SFR-Mstar bins
 # Mask out the regions we want, using a simple sSFR cut
 # Save the galaxy properties for our sample galaxies
-
-# Edited by Matylda for SH 2025
 
 import caesar
 import yt
@@ -135,4 +136,6 @@ with h5py.File(f'{sample_dir}{model}_{wind}_{snap}_galaxy_sample.h5', 'a') as hf
     hf.attrs['ssfr_units'] = 'log yr^-1'
     hf.attrs['sfr_units'] = 'log Msun/yr'
     hf.attrs['vel_units'] = 'km/s'
+
+print(f'Galaxy samples for {model}, {wind}, {snap} generated.')    
 

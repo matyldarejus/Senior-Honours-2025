@@ -9,6 +9,7 @@
 import h5py
 import caesar
 import numpy as np
+import sys
 
 def make_new_dataset(snapfile, output_file, plist, verbose):
     ignore_fields = []

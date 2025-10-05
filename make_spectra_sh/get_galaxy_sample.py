@@ -137,3 +137,5 @@ with h5py.File(f'{sample_dir}{model}_{wind}_{snap}_galaxy_sample.h5', 'a') as hf
     hf.attrs['sfr_units'] = 'log Msun/yr'
     hf.attrs['vel_units'] = 'km/s'
 
+print(f'Galaxy samples for {model}, {wind}, {snap} generated.')    
+

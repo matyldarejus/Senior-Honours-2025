@@ -42,7 +42,7 @@ if __name__ == '__main__':
     nbins_fr200 = 5
     fr200 = np.arange(min_fr200, (nbins_fr200+1)*delta_fr200, delta_fr200)
     
-    sample_dir = f'/disk04/mrejus/sh/samples/
+    sample_dir = f'/disk04/mrejus/sh/samples/'
     data_dir = f'/disk04/rad/sim/{model}/{wind}/'
     snapfile = f'{data_dir}snap_{model}_{snap}.hdf5'
     
