@@ -12,7 +12,7 @@ This repository is based on code originally developed by Sarah Appleby as part o
 
 The original version can be found [here](https://github.com/sarahappleby/cgm/tree/master/absorption/ml_project).  
 
-This fork has been adapted by Matylda Rejus aka me for use in the 2025 Senior Honours project, including:
+This fork has been adapted by Matylda Rejus aka me for use in my Senior Honours project, including:
 - Adjustments to file paths and arguments for compatibility with local cluster environments.
 - Planned refactoring to remove hardcoded parameters and generalize the analysis pipeline.
 
