@@ -84,7 +84,7 @@ if __name__ == '__main__':
     mass_min = 9.75
     mass_max = 11.5
     sfr_min = -2.8
-    gwslc_data_file = '/disk04/rad/gizmo-analysis/caesar/Observations/GSWLC/GSWLC-X2.dat'
+    gwslc_data_file = '/disk04/rad/gizmo-analysis/romeeld/caesar/Observations/GSWLC/GSWLC-X2.dat'
     gwslc_data = {}
     gwslc_data['mass'], gwslc_data['sigma_mass'], gwslc_data['sfr'], gwslc_data['sigma_sfr'], gwslc_data['flag_sed'], gwslc_data['flag_mgs'] = \
             np.loadtxt(gwslc_data_file,usecols=(9,10,11,12,19,23),unpack=True)
