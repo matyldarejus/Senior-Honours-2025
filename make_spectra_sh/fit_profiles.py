@@ -25,6 +25,16 @@ if __name__ == '__main__':
 
     spec = Spectrum(f'{spec_dir}{spec_file}')
 
+    spec.main(
+            vel_range=vel_range,
+            do_fit=True,
+            write_lines=True,
+            chisq_unacceptable=chisq_unacceptable,
+            chisq_asym_thresh=chisq_asym_thresh, 
+            do_plot=True,
+        )
+
+    """
     if hasattr(spec, 'line_list'):
         print(f'Exiting...')
         sys.exit()
@@ -39,3 +49,4 @@ if __name__ == '__main__':
             chisq_asym_thresh=chisq_asym_thresh, 
             do_plot=False,
         )
+    """

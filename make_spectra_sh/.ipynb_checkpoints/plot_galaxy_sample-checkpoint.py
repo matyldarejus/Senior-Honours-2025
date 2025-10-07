@@ -154,5 +154,5 @@ if __name__ == '__main__':
     plt.ylabel(r'$\textrm{log} ({\rm SFR} / {\rm M}_{\odot}{\rm yr}^{-1})$')
     plt.legend(loc=2, fontsize=12)
     plt.tight_layout()
-    plt.savefig(f'{sample_dir}{model}_{wind}_{snap}_Tcgm_new.pdf', format='pdf')
+    plt.savefig(f'/home/matylda/plots/{model}_{wind}_{snap}_Tcgm_new.pdf', format='pdf')
     plt.close()

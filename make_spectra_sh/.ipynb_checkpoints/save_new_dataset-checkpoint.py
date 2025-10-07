@@ -34,11 +34,12 @@ def make_new_dataset(snapfile, output_file, plist, verbose):
 
                 with h5py.File(output_file, 'a') as out_file:
 
-                    if '%s/%s'%(ptype,k) in output_file:
-                        if verbose > 1: print("dataset already exists. replacing...")
-                        del output_file[ptype][k]
+                    if k in out_file[ptype]:
+                        if verbose > 1: 
+                            print("dataset already exists. replacing...")
+                        del out_file[ptype][k]
 
-                    out_file[ptype][k] = temp_dset[plist]
+                    out_file[ptype].create_dataset(k, data = temp_dset[plist])
 
                     temp = out_file['Header'].attrs['NumPart_ThisFile']
                     temp[pidx] = len(plist)

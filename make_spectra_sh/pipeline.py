@@ -11,8 +11,6 @@ import numpy as np
 import h5py
 import re
 import yt
-#import matplotlib.cm as cm
-#from matplotlib import colormaps
 from yt.units.yt_array import YTArray, YTQuantity
 import pygad as pg
 from generate_spectra import generate_pygad_spectrum
@@ -23,8 +21,8 @@ snr = 30.
 vel_range = 600. # km/s
 pixel_size = 2.5 # km/s
 periodic_vel = True
-LSF = None
-#LSF = 'STIS_E140M' # This does not exist!
+#LSF = None
+LSF = 'STIS_E140M'
 fit_contin = True
 delta_fr200 = 0.25
 min_fr200 = 0.25

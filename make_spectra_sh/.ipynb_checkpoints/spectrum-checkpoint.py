@@ -3,6 +3,7 @@
 
 # Classily written spectrum fitting routines :) 
 
+import os
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
@@ -106,7 +107,7 @@ class Spectrum(object):
         # cut out the portion of the spectrum that we want within some velocity range, making sure the section we cut out 
         # goes back up to the conintuum level (no dicontinuities)
 
-        print('getting initial window')
+        print('Getting initial window')
         i_start, i_end, N = self.get_initial_window(vel_range)
         print(i_start, i_end)
         i_start, i_end, N = self.extend_to_continuum(i_start, i_end, N)
@@ -234,7 +235,7 @@ class Spectrum(object):
         chisq = [str(i) for i in chisq]
         plt.title(r'$\chi^2_r = {x}$'.format(x=', '.join(chisq)))
 
-        plot_dir = os.path.expanduser("~/data/plots")
+        plot_dir = os.path.expanduser("~/plots")
         os.makedirs(plot_dir, exist_ok=True)
 
         if filename is None:
@@ -251,6 +252,7 @@ class Spectrum(object):
         Runs all the fitting methods defined above
         Rewritten by Matylda to be more flexible whenever calling in fit_profiles with varied arguments :)
         """
+
         # Default parameters
         defaults = dict(
             do_continuum_buffer=True,
