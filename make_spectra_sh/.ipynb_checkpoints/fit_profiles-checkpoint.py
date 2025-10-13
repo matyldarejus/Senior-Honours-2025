@@ -31,7 +31,7 @@ if __name__ == '__main__':
             write_lines=True,
             chisq_unacceptable=chisq_unacceptable,
             chisq_asym_thresh=chisq_asym_thresh, 
-            do_plot=True,
+            do_plot=False,
         )
 
     """

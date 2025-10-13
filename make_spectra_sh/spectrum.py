@@ -261,9 +261,9 @@ class Spectrum(object):
             chisq_unacceptable=25,
             chisq_asym_thresh=-3,
             do_prepare=True,
-            do_regions=False,
+            do_regions=True,
             do_fit=True,
-            write_lines = False,
+            write_lines = True,
             do_plot=False
         )
     
