@@ -332,4 +332,5 @@ class Spectrum(object):
     
         if self.do_plot:
             self.plot_fit()
-()
+
+()

@@ -199,7 +199,7 @@ if __name__ == '__main__':
     plt.xlabel(r'$\log\ (M_{\star} / M_{\odot})$')
     plt.ylabel(r'$\textrm{log} ({\rm SFR} / M_{\odot}{\rm yr}^{-1})$')
     #plt.savefig(f'{sample_dir}{model}_{wind}_{snap}_fcold.pdf', format='pdf')
-    plt.savefig(os.path.expanduser(f'~/plots/{model}_{wind}_{snap}_fcold.png'), format='png')
+    plt.savefig(os.path.expanduser(f'~/data/plots/{model}_{wind}_{snap}_fcold.png'), format='png')
     plt.close()
     """
 

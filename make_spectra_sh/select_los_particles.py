@@ -73,6 +73,9 @@ if __name__ == '__main__':
 
     partids = np.array([])
 
+
+    """ The below code is meant for 8 lines of sight sampling only -- needed to be changed to get 
+    better comparison for Habitable Worlds 
     for i in range(nbins_fr200):
         los = np.array([pos[:2].copy(), ]*8)
         rho = r200 * fr200[i]
@@ -89,6 +92,21 @@ if __name__ == '__main__':
             partids_los = get_los_particles(l, gas_pos, hsml, wind_mask)
             partids = np.append(partids, partids_los)
             del partids_los
+
+    """
+
+    # Code for multiple lines of sight follows
+
+    for i in range(nbins_fr200):
+        rho = r200 * fr200[i]
+        thetas = np.linspace(0, 2*np.pi, n_los, endpoint=False)
+        for theta in thetas:
+            los = pos[:2].copy()
+            los[0] += rho * np.cos(theta)
+            los[1] += rho * np.sin(theta)
+            partids_los = get_los_particles(los, gas_pos, hsml, wind_mask)
+            partids = np.append(partids, partids_los)
+            
 
     partids = np.unique(np.sort(partids))
     with h5py.File(particle_file, 'a') as f:
