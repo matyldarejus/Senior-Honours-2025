@@ -4,8 +4,7 @@
 MODEL=$1
 WIND=$2
 SNAP=$3
-GALID=$4
-NLOS=$5
+NLOS=$4
 
 # ====== Paths ======
 MAKE_SPECTRA=~/sh/make_spectra_sh
@@ -15,7 +14,6 @@ PLOTS_DIR=/home/matylda/data/plots
 
 echo "============================================================"
 echo "   Gathering and fitting data for for $MODEL $WIND $SNAP"
-echo "   Galaxy ID: $GALID "
 echo "============================================================"
 echo ""
 
@@ -30,9 +28,9 @@ python $MAKE_SPECTRA/get_sample_temp.py $MODEL $WIND $SNAP ||
 echo "[3/8] Running get_gal_sm_ssfr..."
 python $MAKE_SPECTRA/get_gal_sm_ssfr.py $MODEL $WIND $SNAP ||
 
-# Step 4: Diagnostic plot
-echo "[4/8] Running plot_galaxy_sample (diagnostic)..."
-python $MAKE_SPECTRA/plot_galaxy_sample.py $MODEL $WIND $SNAP ||
+# Step 4: Get the lines of sight
+echo "[4/8] Running select_los_particles..."
+python $SUBMISSION/sub_select_los_particles.sh $MODEL $WIND $SNAP $NLOS ||
 
 # Step 5: Save new dataset
 echo "[5/8] Running save_new_dataset..."
@@ -40,7 +38,7 @@ python $MAKE_SPECTRA/save_new_dataset.py $MODEL $WIND $SNAP ||
 
 # Step 6: Run sub_pipeline for all galaxies
 echo "[6/8] Running sub_pipeline.sh (generate spectra)..."
-bash $SUBMISSION/sub_pipeline.sh $MODEL $WIND $SNAP $GALID $NLOS ||
+bash $SUBMISSION/sub_pipeline.sh $MODEL $WIND $SNAP||
 
 # Step 7: Run sub_fit_profiles for all galaxies
 echo "[7/8] Running sub_fit_profiles.sh (fit Voigt profiles)..."

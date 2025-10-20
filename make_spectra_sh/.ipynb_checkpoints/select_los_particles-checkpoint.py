@@ -34,7 +34,8 @@ if __name__ == '__main__':
     model = sys.argv[1]
     wind = sys.argv[2]
     snap = sys.argv[3]
-    sample_gal = int(sys.argv[4]) # supply the gal id that we want from command line
+    sample_gal = int(sys.argv[4]) # supply the gal id that we want from command line]
+    nlos = sys.argv[5]
 
     sqrt2 = np.sqrt(2.)
     delta_fr200 = 0.25
@@ -99,7 +100,7 @@ if __name__ == '__main__':
 
     for i in range(nbins_fr200):
         rho = r200 * fr200[i]
-        thetas = np.linspace(0, 2*np.pi, n_los, endpoint=False)
+        thetas = np.linspace(0, 2*np.pi, nlos, endpoint=False)
         for theta in thetas:
             los = pos[:2].copy()
             los[0] += rho * np.cos(theta)
