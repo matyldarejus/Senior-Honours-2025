@@ -1,3 +1,6 @@
+# Sourced from https://github.com/sarahappleby/cgm/tree/master
+# Edited by Matylda Rejus for SH 2025
+
 import numpy as np
 import h5py
 import pygad as pg
@@ -5,7 +8,7 @@ import caesar
 from yt.utilities.cosmology import Cosmology
 import os
 import sys
-sys.path.insert(0, '/disk04/sapple/cgm/absorption/ml_project/make_spectra/')
+sys.path.insert(0, '/home/matylda/sh/make_spectra_sh/')
 from utils import *
 from physics import create_path_length_file, compute_dX
 from cosmic_variance import get_cosmic_variance_cddf
@@ -19,18 +22,26 @@ if __name__ == '__main__':
     model = sys.argv[1]
     wind = sys.argv[2]
     snap = sys.argv[3]
+    norients = sys.argv[4] # Needed to add this to make the number of lines of sight changeable
 
     vel_range = 600.
+    
+    
+    """
     lines = ["H1215", "MgII2796", "CII1334", "SiIII1206", "CIV1548", "OVI1031"]
     chisq_lim_dict = {'snap_151': [4., 50., 15.8, 39.8, 8.9, 4.5],
                       'snap_137': [3.5, 28.2, 10., 35.5, 8.0, 4.5],
                       'snap_125': [3.5, 31.6, 15.8, 39.8, 10., 5.6], 
                       'snap_105': [4.5, 25.1, 25.1, 34.5, 10., 7.1],}
     #chisq_lim_dict = {'snap_151': [3.5, 28.2, 15.8, 31.6, 5., 4.]} # for the extras sample
-    chisq_lim = chisq_lim_dict[f'snap_{snap}']
+    """
+    # Consider only snap = 151 and OVI1031 line
 
-    norients = 8
-    snapfile = f'/disk04/sapple/data/samples/{model}_{wind}_{snap}.hdf5'
+    lines = ['OVI1031']
+    chisq_lim_dict = {'snap_151': [4., 50., 15.8, 39.8, 8.9, 4.5]}
+    chisq_lim = chisq_lim_dict[f'snap_{snap}']
+    
+    snapfile = f'/disk04/mrejus/sh/samples/{model}_{wind}_{snap}.hdf5'
     s = pg.Snapshot(snapfile)
     boxsize = float(s.boxsize.in_units_of('ckpc/h_0'))
     redshift = s.redshift
@@ -45,7 +56,7 @@ if __name__ == '__main__':
         mass_bin_labels.append(f'{mass_bins[i]}-{mass_bins[i+1]}')
         mass_plot_titles.append(f'{mass_bins[i]}'+ r'$ < \textrm{log} (M_* / M_{\odot}) < $' + f'{mass_bins[i+1]}')
 
-    sim = caesar.load(f'/home/rad/data/{model}/{wind}/Groups/{model}_{snap}.hdf5')
+    sim = caesar.load(f'/disk04/rad/sim/{model}/{wind}/Groups/{model}_{snap}.hdf5')
     co = Cosmology(hubble_constant=sim.simulation.hubble_constant, omega_matter=sim.simulation.omega_matter, omega_lambda=sim.simulation.omega_lambda)
     hubble_parameter = co.hubble_parameter(sim.simulation.redshift).in_units('km/s/Mpc')
     hubble_constant = co.hubble_parameter(0).in_units('km/s/Mpc')
@@ -64,13 +75,13 @@ if __name__ == '__main__':
     plot_logN = get_bin_middle(bins_logN)
     delta_N = np.array([10**bins_logN[i+1] - 10**bins_logN[i] for i in range(len(plot_logN))])
 
-    path_length_file = f'/disk04/sapple/cgm/absorption/ml_project/analyse_spectra/path_lengths.h5'
+    path_length_file = f'/disk04/mrejus/sh/path_lengths.h5'
     if not os.path.isfile(path_length_file):
-        create_path_length_file(vel_range, lines, redshift, path_length_file)
+        create_path_length_file(vel_range, lines, [redshift], path_length_file)
     path_lengths = read_h5_into_dict(path_length_file)
 
-    plot_dir = '/disk04/sapple/cgm/absorption/ml_project/analyse_spectra/plots/'
-    sample_dir = f'/disk04/sapple/data/samples/'
+    plot_dir = f'~/data/plots'
+    sample_dir = f'/disk04/mrejus/sh/samples/'
     sample_file = f'{sample_dir}{model}_{wind}_{snap}_galaxy_sample.h5'
     #sample_file = f'{sample_dir}{model}_{wind}_{snap}_galaxy_sample_extras.h5'
 
@@ -99,11 +110,11 @@ if __name__ == '__main__':
 
     for l, line in enumerate(lines):
 
-        results_file = f'/disk04/sapple/data/normal/results/{model}_{wind}_{snap}_fit_lines_{line}.h5'
-        cddf_file = f'/disk04/sapple/data/normal/results/{model}_{wind}_{snap}_{line}_cddf_mass.h5'
+        results_file = f'/disk04/mrejus/sh/normal/results/{model}_{wind}_{snap}_hm12_fit_lines_{line}.h5'
+        cddf_file = f'/disk04/mrejus/sh/normal/results/{model}_{wind}_{snap}_{line}_cddf_mass.h5'
 
-        #results_file = f'/disk04/sapple/data/normal/results/{model}_{wind}_{snap}_fit_lines_{line}_extras.h5'
-        #cddf_file = f'/disk04/sapple/data/normal/results/{model}_{wind}_{snap}_{line}_cddf_mass_extras.h5'
+        #results_file = f'/disk04/mrejus/sh/normal/results/{model}_{wind}_{snap}_fit_lines_{line}_extras.h5'
+        #cddf_file = f'/disk04/mrejus/sh/normal/results/{model}_{wind}_{snap}_{line}_cddf_mass_extras.h5'
 
         plot_data = {}
         plot_data['plot_logN'] = plot_logN.copy()
@@ -136,7 +147,8 @@ if __name__ == '__main__':
         all_los = all_los[mask]
 
         all_ids = all_ids[mask]
-        idx = np.array([np.where(gal_ids == j)[0] for j in all_ids]).flatten()
+        idx = np.where(gal_id == some_id)
+        #idx = np.array([np.where(gal_ids == j)[0] for j in all_ids]).flatten()
         all_mass = mass[idx]
 
         plot_data[f'cddf_all'] = np.zeros(len(plot_logN))

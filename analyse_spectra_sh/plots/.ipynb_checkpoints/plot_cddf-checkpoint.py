@@ -1,7 +1,6 @@
 # Sourced from https://github.com/sarahappleby/cgm/tree/master
 # Edited by Matylda Rejus for SH 2025
 
-
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
@@ -75,8 +74,8 @@ if __name__ == '__main__':
 
     for l, line in enumerate(lines):
 
-        results_file = f'/disk04/mrejus/sh/normal/{results/{model}_{wind}_{snap}_fit_lines_{line}.h5'
-        cddf_file = f'/disk04/mrejus/sh/normal/{results/{model}_{wind}_{snap}_{line}_cddf_chisqion.h5'
+        results_file = f'/disk04/mrejus/sh/normal/results/{model}_{wind}_{snap}_fit_lines_{line}.h5'
+        cddf_file = f'/disk04/mrejus/sh/normal/results/{model}_{wind}_{snap}_{line}_cddf_chisqion.h5'
 
         plot_data = read_h5_into_dict(cddf_file)
         completeness = plot_data['completeness']

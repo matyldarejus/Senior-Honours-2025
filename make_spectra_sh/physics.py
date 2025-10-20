@@ -5,6 +5,7 @@
 import pygad as pg
 import numpy as np
 import caesar
+import h5py
 from yt.utilities.cosmology import Cosmology
 
 
@@ -57,7 +58,7 @@ def compute_dX(nlos, lines, path_lengths, redshift=0., hubble_parameter=68., hub
     all_dX = np.zeros(len(lines))
 
     for i in range(len(lines)):
-        dz = path_lengths[f'dz_{lines[i]}'][idx] * nlos
+        dz = float(np.array(path_lengths[f'dz_{lines[i]}'])[idx]) * float(nlos)
         all_dX[i] = dz * (hubble_constant / hubble_parameter) * ((1 + redshift) **2.)
     
     return all_dX
@@ -85,5 +86,5 @@ def create_path_length_file(vel_range, lines, redshifts, path_length_file):
             path_length[j] = np.abs(zmax - zmin)
 
         with h5py.File(path_length_file, 'a') as hf:
-            hf.create_dataset(f'dz_{lines[i]}', data=np.array(path_length))
+             hf.create_dataset(f'dz_{lines[i]}', data=np.array(path_length))
 

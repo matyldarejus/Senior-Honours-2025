@@ -1,3 +1,6 @@
+# Sourced from https://github.com/sarahappleby/cgm/tree/master
+# Edited by Matylda Rejus for SH 2025
+
 import matplotlib.pyplot as plt
 import h5py
 import numpy as np
@@ -26,11 +29,12 @@ if __name__ == '__main__':
     wind = sys.argv[2]
     snap = sys.argv[3]
     line = "OVI1031"
-    fr200 = sys.argv[4]
+    fr200 = float(sys.argv[4])
+    norients = int(sys.argv[5])
     
     vel_range = 600. #km/s
-    orients = ['0_deg', '45_deg', '90_deg', '135_deg', '180_deg', '225_deg', '270_deg', '315_deg'] 
-    orients = [0, 45, 90, 135, 180, 225, 270, 315]
+    #orients = ['0_deg', '45_deg', '90_deg', '135_deg', '180_deg', '225_deg', '270_deg', '315_deg'] 
+    orients = np.linspace(0, (360 - 360/norients), norients, dtype=int)
 
     sample_dir = f'/disk04/mrejus/sh/samples/'
     #spectra_dir = f'/disk04/mrejus/sh/normal/{model}_{wind}_{snap}/'

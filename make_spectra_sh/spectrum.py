@@ -36,6 +36,7 @@ class Spectrum(object):
         def _find_nearest(array, value):
             return np.abs(array - value).argmin()
 
+            print(v_central)
         if v_central is None:
             v_central = self.gal_velocity_pos
 
@@ -99,6 +100,7 @@ class Spectrum(object):
         sigma_noise = 1./snr
         new_noise = np.random.normal(0.0, sigma_noise, 2*nbuffer)
         flux = np.concatenate((tau_to_flux(np.zeros(nbuffer)) + new_noise[:nbuffer], flux, tau_to_flux(np.zeros(nbuffer)) + new_noise[nbuffer:]))
+        print(flux)
         
         return waves, flux
 
@@ -185,13 +187,14 @@ class Spectrum(object):
         self.tau_model = np.zeros(len(self.wavelengths))
         for i in range(len(self.line_list["N"])):
             p = np.array([self.line_list["N"][i], self.line_list["b"][i], self.line_list["l"][i]])
+            print(self.line_list["N"][i])
             self.tau_model += pg.analysis.model_tau(self.ion_name, p, self.wavelengths)
 
     
     def get_fluxes_model(self):
 
         # compute the total flux from the individual lines
-
+        print("Computing flux")
         self.get_tau_model()
         self.fluxes_model = tau_to_flux(self.tau_model)
 
@@ -290,17 +293,15 @@ class Spectrum(object):
                 self.line_list = {}
                 self.regions_l, self.regions_i = pg.analysis.find_regions(
                     self.waves_fit, self.fluxes_fit, self.noise_fit,
-                    min_region_width=2, extend=True
+                    min_region_width=1, extend=True
                 )
                 self.line_list['region'] = np.arange(len(self.regions_l))
     
         if self.do_fit:
             print('Fitting...')
-            if self.ion_name == 'H1215':
-                logN_bounds = [12, 19]
-            else:
-                logN_bounds = [11, 17]
-            b_bounds = None
+            
+            logN_bounds = [11, 17]
+            b_bounds = [3, 100]
     
             fit_func = pg.analysis.fit_profiles
             valid_keys = inspect.signature(fit_func).parameters.keys()
@@ -319,13 +320,15 @@ class Spectrum(object):
             }
     
             # Required positional args (always present)
-            self.line_list = pg.analysis.fit_profiles(
+            self.line_list = fit_func(
                 self.ion_name,
                 self.waves_fit,
                 self.fluxes_fit,
                 self.noise_fit,
                 **fit_kwargs
             )
+
+            print(self.line_list)
     
         if self.write_lines:
             self.write_line_list()
